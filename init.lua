@@ -1026,5 +1026,7 @@ vim.keymap.set('n', '<C-e>', function()
 end, { desc = 'Open harpoon window' })
 
 vim.opt.shiftwidth = 2
+vim.opt.clipboard = 'unnamedplus'
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
