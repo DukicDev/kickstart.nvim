@@ -237,6 +237,14 @@ require('lazy').setup({
     branch = 'harpoon2',
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
+  'simrat39/rust-tools.nvim',
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = true,
+    -- use opts = {} for passing setup options
+    -- this is equivalent to setup({}) function
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -1028,5 +1036,17 @@ end, { desc = 'Open harpoon window' })
 vim.opt.shiftwidth = 2
 vim.opt.clipboard = 'unnamedplus'
 
+local rt = require 'rust-tools'
+
+rt.setup {
+  server = {
+    on_attach = function(_, bufnr)
+      -- Hover actions
+      vim.keymap.set('n', '<C-space>', rt.hover_actions.hover_actions, { buffer = bufnr })
+      -- Code action groups
+      -- vim.keymap.set('n', '<Leader>a', rt.code_action_group.code_action_group, { buffer = bufnr })
+    end,
+  },
+}
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
