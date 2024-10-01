@@ -245,6 +245,7 @@ require('lazy').setup({
     -- use opts = {} for passing setup options
     -- this is equivalent to setup({}) function
   },
+  'nvim-treesitter/nvim-treesitter-context',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
