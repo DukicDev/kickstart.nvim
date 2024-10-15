@@ -271,6 +271,18 @@ require('lazy').setup({
       require('pendulum').setup()
     end,
   },
+  {
+    'quentingruber/pomodoro.nvim',
+    lazy = true, -- needed so the pomodoro can start at launch
+    opts = {
+      start_at_launch = false,
+      work_duration = 25,
+      break_duration = 5,
+      delay_duration = 1, -- The additionnal work time you get when you delay a break
+      long_break_duration = 30,
+      breaks_before_long = 4,
+    },
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -939,20 +951,20 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- -- Simple and easy statusline.
+      -- --  You could remove this setup call if you don't like it,
+      -- --  and try some other statusline plugin
+      -- local statusline = require 'mini.statusline'
+      -- -- set use_icons to true if you have a Nerd Font
+      -- statusline.setup { use_icons = vim.g.have_nerd_font }
+      --
+      -- -- You can configure sections in the statusline by overriding their
+      -- -- default behavior. For example, here we set the section for
+      -- -- cursor location to LINE:COLUMN
+      -- ---@diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -1064,7 +1076,6 @@ end)
 vim.keymap.set('n', '<C-S-N>', function()
   harpoon:list():next()
 end)
-local harpoon = require 'harpoon'
 harpoon:setup {}
 
 -- basic telescope configuration
@@ -1109,6 +1120,36 @@ rt.setup {
 
 vim.notify = require 'notify'
 
+local function pomodoro()
+  return require('pomodoro').get_pomodoro_status()
+end
+
+require('lualine').setup {
+  sections = {
+    lualine_c = { 'filetype', 'filename' },
+    lualine_x = { pomodoro },
+    lualine_y = { 'datetime' },
+    lualine_z = { 'location' },
+  },
+  extensions = { 'mason', 'lazy' },
+}
+
+require('pendulum').setup {
+  timeout_len = 300,
+}
+
+local pomodoro = require 'pomodoro'
+vim.keymap.set('n', '<leader>pw', function()
+  pomodoro.start()
+end, { desc = 'Start (P)omodoro (W)ork' })
+
+vim.keymap.set('n', '<leader>pb', function()
+  pomodoro.startBreak()
+end, { desc = 'Start (P)omodoro (B)reak' })
+
+vim.keymap.set('n', '<leader>ps', function()
+  pomodoro.stop()
+end, { desc = '(S)top (P)omodoro ' })
 -- vim.o.background = 'dark'
 -- vim.cmd [[colorscheme gruvbox]]
 
