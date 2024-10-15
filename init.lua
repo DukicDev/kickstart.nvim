@@ -265,6 +265,12 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
   },
+  {
+    'ptdewey/pendulum-nvim',
+    config = function()
+      require('pendulum').setup()
+    end,
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
