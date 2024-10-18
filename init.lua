@@ -272,15 +272,7 @@ require('lazy').setup({
     end,
   },
   {
-    'quentingruber/pomodoro.nvim',
-    lazy = true, -- needed so the pomodoro can start at launch
     opts = {
-      start_at_launch = false,
-      work_duration = 25,
-      break_duration = 5,
-      delay_duration = 1, -- The additionnal work time you get when you delay a break
-      long_break_duration = 30,
-      breaks_before_long = 4,
     },
   },
 
@@ -1120,14 +1112,10 @@ rt.setup {
 
 vim.notify = require 'notify'
 
-local function pomodoro()
-  return require('pomodoro').get_pomodoro_status()
-end
-
 require('lualine').setup {
   sections = {
     lualine_c = { 'filetype', 'filename' },
-    lualine_x = { pomodoro },
+    lualine_x = {},
     lualine_y = { 'datetime' },
     lualine_z = { 'location' },
   },
@@ -1138,18 +1126,7 @@ require('pendulum').setup {
   timeout_len = 300,
 }
 
-local pomodoro = require 'pomodoro'
-vim.keymap.set('n', '<leader>pw', function()
-  pomodoro.start()
-end, { desc = 'Start (P)omodoro (W)ork' })
 
-vim.keymap.set('n', '<leader>pb', function()
-  pomodoro.startBreak()
-end, { desc = 'Start (P)omodoro (B)reak' })
-
-vim.keymap.set('n', '<leader>ps', function()
-  pomodoro.stop()
-end, { desc = '(S)top (P)omodoro ' })
 -- vim.o.background = 'dark'
 -- vim.cmd [[colorscheme gruvbox]]
 
