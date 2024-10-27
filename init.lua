@@ -301,6 +301,43 @@ require('lazy').setup({
       -- see below for full list of options 👇
     },
   },
+  {
+    -- dir = '/home/ddukic/Development/Neovim/Plugins/telescope-jsw.nvim',
+    'DukicDev/telescope-jsw.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+    config = function()
+      require('telescope').load_extension 'telescope-jsw'
+      require('telescope').extensions['telescope-jsw'].setup { url = 'https://luna-engineering.atlassian.net/' }
+    end,
+  },
+  {
+    'epwalsh/pomo.nvim',
+    version = '*', -- Recommended, use latest release instead of latest commit
+    lazy = true,
+    cmd = { 'TimerStart', 'TimerRepeat', 'TimerSession' },
+    dependencies = {
+      -- Optional, but highly recommended if you want to use the "Default" timer
+      'rcarriga/nvim-notify',
+    },
+    opts = {
+      notifiers = {
+        {
+          name = 'Default',
+          opts = {
+            sticky = false,
+          },
+        },
+      },
+      sessions = {
+        code = {
+          { name = 'Work', duration = '1h' },
+          { name = 'Break', duration = '10m' },
+          { name = 'Work', duration = '1h' },
+        },
+      },
+    },
+  },
+  { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true, opts = ... },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -326,51 +363,51 @@ require('lazy').setup({
       },
     },
   },
-  {
-    "adalessa/laravel.nvim",
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-      "tpope/vim-dotenv",
-      "MunifTanjim/nui.nvim",
-      "nvimtools/none-ls.nvim",
-    },
-    cmd = { "Sail", "Artisan", "Composer", "Npm", "Yarn", "Laravel" },
-    keys = {
-      { "<leader>la", ":Laravel artisan<cr>" },
-      { "<leader>lr", ":Laravel routes<cr>" },
-      { "<leader>lm", ":Laravel related<cr>" },
-    },
-    event = { "VeryLazy" },
-    opts = {
-      features = {
-        null_ls = {
-          enable = true,
-        },
-        route_info = {
-          enable = true,         --- to enable the laravel.nvim virtual text
-          position = 'right',    --- where to show the info (available options 'right', 'top')
-          middlewares = true,    --- wheather to show the middlewares section in the info
-          method = true,         --- wheather to show the method section in the info
-          uri = true             --- wheather to show the uri section in the info
-        },
-      },
-    },
-    config = true,
-  },
-    -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-    --
-    -- This is often very useful to both group configuration, as well as handle
-    -- lazy loading plugins that don't need to be loaded immediately at startup.
-    --
-    -- For example, in the following configuration, we use:
-    --  event = 'VimEnter'
-    --
-    -- which loads which-key before all the UI elements are loaded. Events can be
-    -- normal autocommands events (`:help autocmd-events`).
-    --
-    -- Then, because we use the `config` key, the configuration only runs
-    -- after the plugin has been loaded:
-    --  config = function() ... end
+  -- {
+  --   "adalessa/laravel.nvim",
+  --   dependencies = {
+  --     "nvim-telescope/telescope.nvim",
+  --     "tpope/vim-dotenv",
+  --     "MunifTanjim/nui.nvim",
+  --     "nvimtools/none-ls.nvim",
+  --   },
+  --   cmd = { "Sail", "Artisan", "Composer", "Npm", "Yarn", "Laravel" },
+  --   keys = {
+  --     { "<leader>la", ":Laravel artisan<cr>" },
+  --     { "<leader>lr", ":Laravel routes<cr>" },
+  --     { "<leader>lm", ":Laravel related<cr>" },
+  --   },
+  --   event = { "VeryLazy" },
+  --   opts = {
+  --     features = {
+  --       null_ls = {
+  --         enable = true,
+  --       },
+  --       route_info = {
+  --         enable = true,         --- to enable the laravel.nvim virtual text
+  --         position = 'right',    --- where to show the info (available options 'right', 'top')
+  --         middlewares = true,    --- wheather to show the middlewares section in the info
+  --         method = true,         --- wheather to show the method section in the info
+  --         uri = true             --- wheather to show the uri section in the info
+  --       },
+  --     },
+  --   },
+  --   config = true,
+  -- },
+  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
+  --
+  -- This is often very useful to both group configuration, as well as handle
+  -- lazy loading plugins that don't need to be loaded immediately at startup.
+  --
+  -- For example, in the following configuration, we use:
+  --  event = 'VimEnter'
+  --
+  -- which loads which-key before all the UI elements are loaded. Events can be
+  -- normal autocommands events (`:help autocmd-events`).
+  --
+  -- Then, because we use the `config` key, the configuration only runs
+  -- after the plugin has been loaded:
+  --  config = function() ... end
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
@@ -1079,7 +1116,7 @@ harpoon:setup()
 vim.keymap.set('n', '<leader>a', function()
   harpoon:list():add()
 end)
-vim.keymap.set('n', '<C-e>', function()
+vim.keymap.set('n', '<leader>h', function()
   harpoon.ui:toggle_quick_menu(harpoon:list())
 end)
 
@@ -1146,11 +1183,38 @@ rt.setup {
 }
 
 vim.notify = require 'notify'
+local function pomodoro()
+  local ok, pomo = pcall(require, 'pomo')
+  if not ok then
+    return ''
+  end
+
+  local timer = pomo.get_first_to_finish()
+  if timer == nil then
+    return ''
+  end
+
+  return '󰄉 ' .. tostring(timer)
+end
 
 require('lualine').setup {
   sections = {
     lualine_c = { 'filetype', 'filename' },
-    lualine_x = {},
+    lualine_x = {
+      function()
+        local ok, pomo = pcall(require, 'pomo')
+        if not ok then
+          return ''
+        end
+
+        local timer = pomo.get_first_to_finish()
+        if timer == nil then
+          return ''
+        end
+
+        return '󰄉 ' .. tostring(timer)
+      end,
+    },
     lualine_y = { 'datetime' },
     lualine_z = { 'location' },
   },
@@ -1165,9 +1229,20 @@ require('pendulum').setup {
 vim.keymap.set('n', '<leader>on', '<cmd>ObsidianNew<cr>', { desc = 'Obsidian New' })
 vim.keymap.set('n', '<leader>oo', '<cmd>ObsidianOpen<cr>', { desc = 'Obsidian Open' })
 vim.keymap.set('n', '<leader>os', '<cmd>ObsidianSearch<cr>', { desc = 'Obsidian Search' })
+vim.keymap.set('n', '<leader>ob', '<cmd>ObsidianBacklinks<cr>', { desc = 'Obsidian Backlinks' })
 
--- vim.o.background = 'dark'
--- vim.cmd [[colorscheme gruvbox]]
+vim.keymap.set(
+  'n',
+  '<leader>ji',
+  "<cmd>lua require('telescope').extensions['telescope-jsw'].jira_issues()<CR>",
+  { noremap = true, silent = true, desc = 'Search Jira Issues' }
+)
+vim.keymap.set(
+  'n',
+  '<leader>jr',
+  "<cmd>lua require('telescope').extensions['telescope-jsw'].jira_issues({no_cache = true})<CR>",
+  { noremap = true, silent = true, desc = 'Refresh and Search Jira Issues' }
+)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
